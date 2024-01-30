@@ -12,6 +12,7 @@ def prepare_directory(path: Path) -> Path:
     Returns:
         The path to the directory.
     """
+    path = Path(path)
     if not os.path.exists(path):
         os.makedirs(path)
     return path

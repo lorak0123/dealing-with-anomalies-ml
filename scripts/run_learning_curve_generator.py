@@ -54,7 +54,7 @@ def generate_learning_curves(
 ) -> None:
     stats = {}
     error_metric_class = get_error_metric_by_name(error_metric)
-    progress_bar = tqdm(list(input_path.glob('*.csv')), desc='Reading files')
+    progress_bar = tqdm(list(Path(input_path).glob('*.csv')), desc='Reading files')
     for file in progress_bar:
         results = ResultsData.from_csv(file)
 
@@ -83,7 +83,7 @@ def generate_learning_curves(
         if interpolate:
             ax.plot(*interpolate_data(data.index, data.err, precision=1), label=model)
         else:
-            ax.plot(data.index, data.mae, label=model)
+            ax.plot(data.index, data.err, label=model)
 
     ax.set_title(f'{error_metric_class.full_name} for different data sizes')
     ax.set_xlabel('Training data size')

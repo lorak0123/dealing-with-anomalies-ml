@@ -21,7 +21,7 @@ ALL_MODELS = [
 ]
 
 
-def get_model_by_name(model_name: str) -> Model | list[Model]:
+def get_model_by_name(model_name: str) -> list[Model]:
     """
     Returns model by its name
 
@@ -41,6 +41,6 @@ def get_model_by_name(model_name: str) -> Model | list[Model]:
     if isinstance(model, list) and all(isinstance(m, Model) for m in model):
         return model
     elif isinstance(model, Model):
-        return model
+        return [model]
 
     raise ValueError(f'Model {model_name} must be a subclass of Model. Got {type(model)} instead.')

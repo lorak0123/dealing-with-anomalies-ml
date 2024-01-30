@@ -37,13 +37,13 @@ def get_grouping_function(aggregation: str) -> callable:
 @click.option(
     '--input_file',
     type=click.Path(),
-    help='Path to the data directory'
+    help='Path to the results data file'
 )
 @click.option(
     '--output_path',
     type=click.Path(),
     default=DATA_DIR / 'evaluation/models_evaluation',
-    help='Path to the data directory'
+    help='Path to the output data directory'
 )
 @click.option(
     '--aggregation',
