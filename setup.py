@@ -11,9 +11,10 @@ setup(
     install_requires=required,
     entry_points={
         'console_scripts': [
-            'run_model_evaluation=scripts.run_model_evaluation:model_evaluation',
+            'model_evaluation=scripts.run_model_evaluation:model_evaluation',
             'generate_learning_curves=scripts.run_learning_curve_generator:generate_learning_curves',
-            'run_time_stats_analytics=scripts.run_time_stats_analytics:run_time_stats_analytics'
+            'time_stats_analytics=scripts.run_time_stats_analytics:time_stats_analytics',
+            'results_error_analytics=scripts.run_results_error_analytics:results_error_analytics',
         ]
     }
 )

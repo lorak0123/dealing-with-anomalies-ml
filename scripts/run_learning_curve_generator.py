@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 from tqdm import tqdm
 
 from prediction_system.data_utils.error_metrics import get_error_metric_by_name
-from prediction_system.data_utils.error_metrics.mae_error_metric import MAEErrorMetric
 from prediction_system.data_utils.helpers import interpolate_data
 from prediction_system.data_utils.results_data import ResultsData
 
@@ -21,12 +20,18 @@ logging.basicConfig(level=logging.INFO)
 @click.option(
     '--input_path',
     type=click.Path(),
+    default=DATA_DIR / 'evaluation/models_evaluation/models_results',
+    help='Path to the data directory'
+)
+@click.option(
+    '--output_path',
+    type=click.Path(),
     default=DATA_DIR / 'evaluation/models_evaluation',
     help='Path to the data directory'
 )
 @click.option(
     '--show_plot',
-    default=True,
+    default=False,
     help='Show plot'
 )
 @click.option(
@@ -40,7 +45,13 @@ logging.basicConfig(level=logging.INFO)
     help='Error metric to use for evaluation. Must be defined in prediction_system/data_utils/error_metrics/__init__.py'
 )
 @exception_logger
-def generate_learning_curves(input_path: Path, show_plot: bool, interpolate: bool, error_metric: str) -> None:
+def generate_learning_curves(
+        input_path: Path,
+        output_path: Path,
+        show_plot: bool,
+        interpolate: bool,
+        error_metric: str
+) -> None:
     stats = {}
     error_metric_class = get_error_metric_by_name(error_metric)
     progress_bar = tqdm(list(input_path.glob('*.csv')), desc='Reading files')
@@ -60,6 +71,11 @@ def generate_learning_curves(input_path: Path, show_plot: bool, interpolate: boo
 
     progress_bar.colour = 'green'
 
+    pd.DataFrame(
+        {model: data.err for model, data in stats.items()},
+        index=[int(data_size) for data_size in stats[model].index]
+    ).to_csv(prepare_directory(output_path) / f'{error_metric_class.name}.csv')
+
     fig, ax = plt.subplots(figsize=(20, 10))
 
     for model, data in stats.items():
@@ -69,12 +85,12 @@ def generate_learning_curves(input_path: Path, show_plot: bool, interpolate: boo
         else:
             ax.plot(data.index, data.mae, label=model)
 
-    ax.set_title('Model evaluation')
-    ax.set_xlabel('Data size')
-    ax.set_ylabel(error_metric)
+    ax.set_title(f'{error_metric_class.full_name} for different data sizes')
+    ax.set_xlabel('Training data size')
+    ax.set_ylabel(f"{error_metric_class.name}, {error_metric_class.unit}")
     ax.grid()
     ax.legend()
-    plt.savefig(prepare_directory(input_path) / 'model_evaluation.png')
+    plt.savefig(prepare_directory(output_path) / f'{error_metric_class.name}.png')
     if show_plot:
         plt.show()
 

@@ -29,7 +29,7 @@ from data import DATA_DIR
     help='Show plot'
 )
 @exception_logger
-def run_time_stats_analytics(
+def time_stats_analytics(
     time_stats_path: Path,
     output_path: Path,
     show_plot: bool

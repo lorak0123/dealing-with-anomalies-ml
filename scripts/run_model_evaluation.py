@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 )
 @click.option(
     '--output_path',
-    default=DATA_DIR / 'evaluation/models_evaluation',
+    default=DATA_DIR / 'evaluation/models_evaluation/models_results',
     type=click.Path(),
     help='Path to the output directory'
 )
