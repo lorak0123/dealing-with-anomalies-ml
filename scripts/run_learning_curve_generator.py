@@ -5,15 +5,14 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
+from prediction_system.data_utils.error_metrics import get_error_metric_by_name
+from prediction_system.data_utils.error_metrics.mae_error_metric import MAEErrorMetric
 from prediction_system.data_utils.helpers import interpolate_data
 from prediction_system.data_utils.results_data import ResultsData
 
 from data import DATA_DIR
-from prediction_system.config import get_model_by_name
-from prediction_system.data_utils.input_data import InputData
 from prediction_system.data_utils.path_manager import prepare_directory
-from prediction_system.timeseries_predictor.base_dataseries_predictor import BaseTimeSeriesPredictor
-from utils.time_stats_utils import time_stats_decorator
+from utils.exception_logger_decorator import exception_logger
 
 logging.basicConfig(level=logging.INFO)
 
@@ -35,8 +34,15 @@ logging.basicConfig(level=logging.INFO)
     default=True,
     help='Interpolate data'
 )
-def generate_learning_curves(input_path: Path, show_plot: bool, interpolate: bool) -> None:
+@click.option(
+    '--error_metric',
+    default='MAE',
+    help='Error metric to use for evaluation. Must be defined in prediction_system/data_utils/error_metrics/__init__.py'
+)
+@exception_logger
+def generate_learning_curves(input_path: Path, show_plot: bool, interpolate: bool, error_metric: str) -> None:
     stats = {}
+    error_metric_class = get_error_metric_by_name(error_metric)
     progress_bar = tqdm(list(input_path.glob('*.csv')), desc='Reading files')
     for file in progress_bar:
         results = ResultsData.from_csv(file)
@@ -45,12 +51,12 @@ def generate_learning_curves(input_path: Path, show_plot: bool, interpolate: boo
 
         if model not in stats:
             stats[model] = pd.DataFrame(
-                {'mae': [(results.real - results.prediction).abs().mean()]},
+                {'err': [error_metric_class.compute(results)]},
                 index=[int(data_size)]
             )
 
         else:
-            stats[model].loc[int(data_size)] = [(results.real - results.prediction).abs().mean()]
+            stats[model].loc[int(data_size)] = [error_metric_class.compute(results)]
 
     progress_bar.colour = 'green'
 
@@ -59,13 +65,13 @@ def generate_learning_curves(input_path: Path, show_plot: bool, interpolate: boo
     for model, data in stats.items():
         data.sort_index(inplace=True)
         if interpolate:
-            ax.plot(*interpolate_data(data.index, data.mae, precision=1), label=model)
+            ax.plot(*interpolate_data(data.index, data.err, precision=1), label=model)
         else:
             ax.plot(data.index, data.mae, label=model)
 
     ax.set_title('Model evaluation')
     ax.set_xlabel('Data size')
-    ax.set_ylabel('MAE')
+    ax.set_ylabel(error_metric)
     ax.grid()
     ax.legend()
     plt.savefig(prepare_directory(input_path) / 'model_evaluation.png')

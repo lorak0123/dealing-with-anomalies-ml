@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 import click as click
+from utils.exception_logger_decorator import exception_logger
 
 from data import DATA_DIR
 from prediction_system.config import get_model_by_name
@@ -42,6 +43,7 @@ logging.basicConfig(level=logging.INFO)
     help='Number of parallel jobs to run'
 )
 @time_stats_decorator(category='learning_curves')
+@exception_logger
 def model_evaluation(data_path: Path, output_path: Path, step: list, model: str, n_jobs: int) -> None:
     """
     Generates learning curves for the given data file and saves them to the given output directory.

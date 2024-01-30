@@ -3,6 +3,8 @@ from pathlib import Path
 import click
 import pandas as pd
 import matplotlib.pyplot as plt
+from utils.exception_logger_decorator import exception_logger
+
 from prediction_system.data_utils.path_manager import prepare_directory
 
 from data import DATA_DIR
@@ -26,6 +28,7 @@ from data import DATA_DIR
     default=True,
     help='Show plot'
 )
+@exception_logger
 def run_time_stats_analytics(
     time_stats_path: Path,
     output_path: Path,
