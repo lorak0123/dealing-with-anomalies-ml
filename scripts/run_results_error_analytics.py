@@ -2,10 +2,8 @@ import logging
 from datetime import timedelta
 from pathlib import Path
 import click as click
-import pandas as pd
 from matplotlib import pyplot as plt
 from prediction_system.data_utils.path_manager import prepare_directory
-from tqdm import tqdm
 
 from prediction_system.data_utils.error_metrics import get_error_metric_by_name
 from prediction_system.data_utils.results_data import ResultsData

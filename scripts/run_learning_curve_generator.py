@@ -81,16 +81,19 @@ def generate_learning_curves(
     for model, data in stats.items():
         data.sort_index(inplace=True)
         if interpolate:
-            ax.plot(*interpolate_data(data.index, data.err, precision=1), label=model)
+            ax.plot(*interpolate_data(data.index, data.err), label=model)
         else:
             ax.plot(data.index, data.err, label=model)
 
     ax.set_title(f'{error_metric_class.full_name} for different data sizes')
     ax.set_xlabel('Training data size')
-    ax.set_ylabel(f"{error_metric_class.name}, {error_metric_class.unit}")
-    ax.grid()
+    ax.set_ylabel(f"{error_metric_class.name}, [{error_metric_class.unit}]")
+    ax.grid(which='major', linewidth='0.8', color='#DDDDDD')
+    ax.grid(which='minor', linewidth='0.5', color='#EEEEEE')
+
+    ax.minorticks_on()
     ax.legend()
-    plt.savefig(prepare_directory(output_path) / f'{error_metric_class.name}.png')
+    plt.savefig(prepare_directory(output_path) / f'{error_metric_class.name}.png', dpi=300)
     if show_plot:
         plt.show()
 
