@@ -59,8 +59,6 @@ def model_evaluation(data_path: Path, output_path: Path, step: list, model: str,
 
     models = get_model_by_name(model)
 
-    models = [models] if isinstance(models, str) else models
-
     for model in models:
         logging.info(f'Generating learning curves for {model.__class__.__name__}')
         for s in step:

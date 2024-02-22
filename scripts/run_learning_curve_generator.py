@@ -97,6 +97,8 @@ def generate_learning_curves(
     if show_plot:
         plt.show()
 
+    plt.close()
+
 
 if __name__ == '__main__':
     generate_learning_curves()

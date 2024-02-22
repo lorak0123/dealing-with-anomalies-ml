@@ -12,21 +12,22 @@ from prediction_system.data_utils.results_data import ResultsData
 class BaseTimeSeriesPredictor:
     """
     Class to process prediction for time labeled data
+
+    Args:
+        input_data: Input data
+        training_data_period: Period of training data in days
+        test_period: Period of test data in days
+        test_data_delay: Delay of test data in days
+        max_workers: Number of workers to use for parallel processing
     """
-    def __init__(self,
-                 input_data: InputData,
-                 training_data_period: int = 28,
-                 test_period: int = 1,
-                 test_data_delay: int = 0,
-                 max_workers: int = 1):
-        """
-        Args:
-            input_data: Input data
-            training_data_period: Period of training data in days
-            test_period: Period of test data in days
-            test_data_delay: Delay of test data in days
-            max_workers: Number of workers to use for parallel processing
-        """
+    def __init__(
+        self,
+        input_data: InputData,
+        training_data_period: int = 28,
+        test_period: int = 1,
+        test_data_delay: int = 0,
+        max_workers: int = 1
+    ):
         self.input_data = input_data
         self.training_data_period = timedelta(days=training_data_period)
         self.test_period = timedelta(days=test_period)

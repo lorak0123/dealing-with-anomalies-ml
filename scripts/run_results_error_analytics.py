@@ -85,6 +85,8 @@ def results_error_analytics(
     if show_plot:
         plt.show()
 
+    plt.close()
+
 
 if __name__ == '__main__':
     results_error_analytics()

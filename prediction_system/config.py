@@ -1,3 +1,5 @@
+from itertools import product
+
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
@@ -10,15 +12,38 @@ DECISION_TREE_REGRESSOR = DecisionTreeRegressor(max_depth=50)
 SVR_REGRESSOR = SVR(kernel='poly')
 RANDOM_FOREST_REGRESSOR = RandomForestRegressor(n_estimators=50)
 
-
-BASE_MODEL = RANDOM_FOREST_REGRESSOR
-
 ALL_MODELS = [
     KNN_REGRESSOR,
     DECISION_TREE_REGRESSOR,
     SVR_REGRESSOR,
     RANDOM_FOREST_REGRESSOR,
 ]
+
+RANDOM_FOREST_REGRESSOR_MODELS_EVALUATION = []
+
+params_config = {
+    'n_estimators': list(range(10, 101, 20)),
+    'criterion': ['squared_error', 'absolute_error'],
+    'max_depth': list(range(10, 101, 20)) + [None],
+    'max_features': [None, 'sqrt', 'log2'],
+    'bootstrap': [True, False],
+}
+for params in [dict(zip(params_config.keys(), values)) for values in product(*params_config.values())]:
+    cls = type(
+        f'RandomForestRegressor_{"-".join(f"{k}={v}" for k, v in params.items())}',
+        (RandomForestRegressor,),
+        {}
+    )
+    RANDOM_FOREST_REGRESSOR_MODELS_EVALUATION.append(cls(**params))
+
+
+BASE_MODEL = RandomForestRegressor(
+    n_estimators=90,
+    criterion='squared_error',
+    max_depth=30,
+    max_features='sqrt',
+    bootstrap=False,
+)
 
 
 def get_model_by_name(model_name: str) -> list[Model]:

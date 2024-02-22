@@ -15,6 +15,7 @@ setup(
             'generate_learning_curves=scripts.run_learning_curve_generator:generate_learning_curves',
             'time_stats_analytics=scripts.run_time_stats_analytics:time_stats_analytics',
             'results_error_analytics=scripts.run_results_error_analytics:results_error_analytics',
+            'results_approximation=scripts.run_results_approximation:results_approximation',
         ]
     }
 )
